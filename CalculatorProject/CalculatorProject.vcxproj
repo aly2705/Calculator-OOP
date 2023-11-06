@@ -127,7 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CharStack.cpp" />
+    <ClCompile Include="Expression.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NumberStack.cpp" />
+    <ClCompile Include="NumberStack.h" />
+    <ClCompile Include="Token.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CharStack.h" />
+    <ClInclude Include="Expression.h" />
+    <ClInclude Include="Token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
