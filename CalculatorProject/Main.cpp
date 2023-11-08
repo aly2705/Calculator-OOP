@@ -9,15 +9,20 @@
 using namespace std;
 
 int main() {
-	string input = "";
+	string input = ""; int counter = 0;
 	cout << "Introduceti o expresie matematica: (pentru iesire introduceti 'exit')" << endl;
+
 	while (input != "exit") {
 		getline(cin, input);
+		
 		if (input != "exit") {
-			Expression expression(input);
-			cout << expression.evaluate() << endl;
+			Expression expression(++counter, input);
+			int hasError = expression.evaluate();
+			if (!hasError) cout << expression.getResult() << endl;
+			else if (hasError == 1) cout << "Invalid expression" << endl;
+			else if (hasError == 2) cout << "Invalid operation" << endl;
 			cout << endl;
 		}
-		else cout << "Se iese din program..."<<endl;
+		else cout <<"Expresii evaluate: "<< counter << endl;
 	}
 }

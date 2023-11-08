@@ -9,15 +9,18 @@
 using namespace std;
 
 
-Expression::Expression() {
+Expression::Expression():number(0) {
+	result = NULL;
 	infix = "";
 	postfix = nullptr;
 }
-Expression::Expression(string expr) {
+Expression::Expression(int number, string expr):number(number) {
+	result = NULL;
 	infix = expr;
 	postfix = nullptr;
 }
-Expression::Expression(const Expression& expr) {
+Expression::Expression(const Expression& expr): number(expr.number) {
+	result = expr.result;
 	infix = expr.infix;
 
 	if (expr.postfix != nullptr) {
@@ -35,6 +38,7 @@ Expression& Expression::operator=(const Expression& expr) {
 	if (this != &expr) {
 		if (postfix != nullptr) delete[] postfix;
 		infix = expr.infix;
+		result = expr.result;
 
 		if (expr.postfix != nullptr) {
 			int copiedPostfixLength = strlen(expr.postfix);
@@ -93,8 +97,16 @@ void Expression::addToPostfix(char token) {
 	}
 }
 
-void Expression::convertInfixToPostfix() {
+// exit code 0 - successful parse
+// exit code 1 - error during parsing
+int Expression::convertInfixToPostfix() {
+	if (infix == "") return 1;
 	CharStack charStack;
+
+	
+	Token firstToken(infix[0]);
+	if (!firstToken.isSign() && !firstToken.isOpenParanthesis() && !firstToken.isDigit()) return 1;
+	
 
 	for (int i = 0; i < infix.length(); i++) {
 		Token t(infix[i]);
@@ -105,11 +117,11 @@ void Expression::convertInfixToPostfix() {
 				if (i + 1 < infix.length()) {
 					Token nextTok(infix[i + 1]);
 					if ((!nextTok.isPoint() && !nextTok.isDigit()) || i + 1 == infix.length()) {
-						addToPostfix(' ');
+						addToPostfix(Token::getDelimiter());
 					}
 				}
 				else if (i + 1 == infix.length()) {
-					addToPostfix(' ');
+					addToPostfix(Token::getDelimiter());
 				}
 			}
 			else if (t.isOpenParanthesis()) charStack.push('(');
@@ -121,7 +133,7 @@ void Expression::convertInfixToPostfix() {
 				while (lastToken.precedence() >= t.precedence() && lastValue && !lastToken.isOpenParanthesis()) {
 					char poppedValue = charStack.pop();
 					addToPostfix(poppedValue);
-					addToPostfix(' ');
+					addToPostfix(Token::getDelimiter());
 
 					stackSize = charStack.getSize();
 					lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
@@ -137,7 +149,7 @@ void Expression::convertInfixToPostfix() {
 				while (!lastToken.isOpenParanthesis()) {
 					char poppedValue = charStack.pop();
 					addToPostfix(poppedValue);
-					addToPostfix(' ');
+					addToPostfix(Token::getDelimiter());
 
 					stackSize = charStack.getSize();
 					lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
@@ -145,45 +157,93 @@ void Expression::convertInfixToPostfix() {
 				}
 				charStack.pop();
 			}
+			else return 1;
 		}
 	}
 	int stackSize = charStack.getSize();
 	while (stackSize > 0) {
 		char poppedValue = charStack.pop();
 		addToPostfix(poppedValue);
-		if (stackSize - 1 > 0) addToPostfix(' ');
+		if (stackSize - 1 > 0) addToPostfix(Token::getDelimiter());
 
 		stackSize = charStack.getSize();
 	}
+	//cout << postfix<<endl;
+
+	return 0;
 }
 
-float Expression::evaluatePostfixResult() {
+// exit code 0 - successful operation
+// exit code 1 - error during performing operations
+int Expression::evaluatePostfixResult() {
 	NumberStack numStack;
 	char* context = nullptr;
-	char* sequence = strtok_s(postfix, " ", &context);
+
+	char delimiter[2];
+	if (Token::getDelimiter() == ' ') {
+		strcpy_s(delimiter, " ");
+	}
+	else strcpy_s(delimiter, "_");
+
+	char* sequence = strtok_s(postfix, delimiter, &context);
 	while (sequence != NULL) {
 		Token firstToken(sequence[0]);
 		if (firstToken.isDigit()) numStack.push(strtof(sequence, NULL));
 		if (firstToken.isOperator()) {
 			// Get operands
 			float a = numStack.pop();
-			float b = numStack.pop();
+
+			float b;
+			if (numStack.getSize() > 0)
+				b = numStack.pop();
+			else b = 0;
 
 			// Perform desired operation and push in the numStack
 			if (firstToken.getValue() == '+') numStack.push(a + b);
 			else if (firstToken.getValue() == '*') numStack.push(a * b);
-			else if (firstToken.getValue() == '/') numStack.push(b / a);
+			else if (firstToken.getValue() == '/') {
+				if (a != 0) numStack.push(b / a);
+				else return 1;
+			}
 			else if (firstToken.getValue() == '-') numStack.push(b - a);
 			else if (firstToken.getValue() == '^') numStack.push(pow(b, a));
 			else if (firstToken.getValue() == '#') numStack.push(pow(b, 1 / a));
 		}
 
-		sequence = strtok_s(NULL, " ", &context);
+		sequence = strtok_s(NULL, delimiter, &context);
 	}
-	return numStack.pop();
+	// Last value in the stack will be the expression result
+	this->result = numStack.pop();
+	return 0;
 }
 
-float Expression::evaluate() {
-	convertInfixToPostfix();
-	return evaluatePostfixResult();
+// exit code 0 - success
+// exit code 1 - invalid expression
+// exit code 2 - invalid operation encountered
+int Expression::evaluate() {
+	int errorDuringParsing = convertInfixToPostfix();
+	if (!errorDuringParsing) {
+		int invalidOperation = evaluatePostfixResult();
+		if (!invalidOperation) return 0;
+		else return 2;
+	}
+	else return 1;
 }
+
+float Expression::getResult() {
+	return result;
+}
+
+void Expression::setResult(float result) {
+	if (result == NULL) this->result = result;
+}
+
+string Expression::getInfix() {
+	return infix;
+};
+void Expression::setInfix(string infix) {
+	if(infix != ""){
+		Token firstToken(infix[0]);
+		if (firstToken.isSign() || firstToken.isOpenParanthesis() || firstToken.isDigit()) this->infix = infix;
+	}
+};

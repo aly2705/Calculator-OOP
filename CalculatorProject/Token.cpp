@@ -1,5 +1,7 @@
 #include "Token.h"
+#include <string.h>
 
+char Token::delimiter = ' ';
 
 Token::Token() {
 	value = '\0';
@@ -34,9 +36,20 @@ int Token::precedence() {
 	}
 	else return -1;
 }
+int Token::isSign() {
+	return (value == '+' || value == '-');
+}
 char Token::getValue() {
 	return value;
 }
 void Token::setValue(char value) {
 	this->value = value;
 }
+char Token::getDelimiter() {
+	return delimiter;
+}
+void Token::setDelimiter(char newDelimiter) {
+	if (newDelimiter == ' ' || newDelimiter == '_') delimiter = newDelimiter;
+}
+
+

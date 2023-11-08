@@ -6,6 +6,16 @@ CharStack::CharStack() {
 	size = 0;
 }
 
+CharStack::CharStack(char* values, int size): CharStack() {
+	if (values != nullptr && size > 0) {
+		this->size = size;
+		this->values = new char[size];
+		for (int i = 0; i < size; i++) {
+			this->values[i] = values[i];
+		}
+	}
+}
+
 CharStack::CharStack(const CharStack& s) : CharStack() {
 	if (s.values != nullptr && s.size > 0) {
 		size = s.size;
@@ -98,4 +108,23 @@ char CharStack::getValue(int index) {
 		return values[index];
 	}
 	else return -1;
+}
+
+void CharStack::setValues(char* newValues, int newSize) {
+	if (values != nullptr && size > 0) {
+		delete[] values;
+		values = nullptr;
+	};
+
+	if (newValues != nullptr && newSize > 0) {
+		size = newSize;
+		values = new char[newSize];
+		for (int i = 0; i < newSize; i++) {
+			values[i] = newValues[i];
+		}
+	}
+	else {
+		size = 0;
+		values = nullptr;
+	}
 }

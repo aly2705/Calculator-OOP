@@ -5,6 +5,16 @@ NumberStack::NumberStack() {
 	size = 0;
 }
 
+NumberStack::NumberStack(float* values, int size) : NumberStack() {
+	if (values != nullptr && size > 0) {
+		this->size = size;
+		this->values = new float[size];
+		for (int i = 0; i < size; i++) {
+			this->values[i] = values[i];
+		}
+	}
+}
+
 NumberStack::NumberStack(const NumberStack& s) : NumberStack() {
 	if (s.values != nullptr && s.size > 0) {
 		size = s.size;
@@ -95,4 +105,23 @@ float NumberStack::getValue(int index) {
 		return values[index];
 	}
 	else return -1;
+}
+
+void NumberStack::setValues(int* newValues, int newSize) {
+	if (values != nullptr && size > 0) {
+		delete[] values;
+		values = nullptr;
+	};
+
+	if (newValues != nullptr && newSize > 0) {
+		size = newSize;
+		values = new float[newSize];
+		for (int i = 0; i < newSize; i++) {
+			values[i] = newValues[i];
+		}
+	}
+	else {
+		size = 0;
+		values = nullptr;
+	}
 }
