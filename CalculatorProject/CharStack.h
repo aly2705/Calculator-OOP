@@ -6,6 +6,7 @@ private:
 	char* values;
 
 public:
+	/////////////////////////////////
 	// Constructors
 	CharStack();
 
@@ -13,12 +14,15 @@ public:
 
 	CharStack(const CharStack& s);
 	
+	/////////////////////////////////
 	// Destructor
 	~CharStack();
 
+	////////////////////////////////
 	// Operator overloading
 	CharStack& operator=(const CharStack& s);
 
+	////////////////////////////////
 	// Access methods
 	int getSize();
 
@@ -26,6 +30,7 @@ public:
 
 	void setValues(char* newValues, int newSize);
 
+	/////////////////////////////////
 	// Generic methods
 	void push(char token);
 

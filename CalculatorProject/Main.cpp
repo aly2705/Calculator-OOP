@@ -9,6 +9,24 @@
 using namespace std;
 
 int main() {
+	//////////////////////////
+	// Temporary testing zone
+
+	// Expression testing
+
+	/*
+	// + and - operator overloading
+	Expression expr1(0, "2* 4"), expr2(1, "5+ (-10)");
+	Expression expr3 = expr1 - expr2;
+
+	cout << expr3.getInfix();
+	expr3.evaluate();
+	cout << expr3.getResult()<<endl;
+	*/
+	// Token testing
+
+	//////////////////////////
+	// Calculator functionality
 	string input = ""; int counter = 0;
 	cout << "Introduceti o expresie matematica: (pentru iesire introduceti 'exit')" << endl;
 

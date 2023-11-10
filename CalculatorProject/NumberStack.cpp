@@ -1,5 +1,8 @@
 #include "NumberStack.h"
 
+
+/////////////////////////////////////
+// Constructors
 NumberStack::NumberStack() {
 	values = nullptr;
 	size = 0;
@@ -24,12 +27,18 @@ NumberStack::NumberStack(const NumberStack& s) : NumberStack() {
 		}
 	}
 }
+
+/////////////////////////////////////
+// Destructor
 NumberStack::~NumberStack() {
 	if (values != nullptr && size > 0) {
 		delete[] values;
 		values = nullptr;
 	};
 }
+
+/////////////////////////////////////
+// Operator overloading
 NumberStack& NumberStack::operator=(const NumberStack& s) {
 	if (this != &s) {
 
@@ -52,6 +61,41 @@ NumberStack& NumberStack::operator=(const NumberStack& s) {
 	}
 	return *this;
 }
+
+/////////////////////////////////////
+// Access methods
+int NumberStack::getSize() {
+	return size;
+
+}
+float NumberStack::getValue(int index) {
+	if (index < size) {
+		return values[index];
+	}
+	else return -1;
+}
+
+void NumberStack::setValues(float* newValues, int newSize) {
+	if (values != nullptr && size > 0) {
+		delete[] values;
+		values = nullptr;
+	};
+
+	if (newValues != nullptr && newSize > 0) {
+		size = newSize;
+		values = new float[newSize];
+		for (int i = 0; i < newSize; i++) {
+			values[i] = newValues[i];
+		}
+	}
+	else {
+		size = 0;
+		values = nullptr;
+	}
+}
+
+/////////////////////////////////////
+// Generic methods
 void NumberStack::push(float token) {
 	if (values != nullptr && size > 0) {
 		float* buffer = new float[size];
@@ -94,34 +138,5 @@ float NumberStack::pop() {
 	}
 	else {
 		return -1;
-	}
-}
-int NumberStack::getSize() {
-	return size;
-
-}
-float NumberStack::getValue(int index) {
-	if (index < size) {
-		return values[index];
-	}
-	else return -1;
-}
-
-void NumberStack::setValues(int* newValues, int newSize) {
-	if (values != nullptr && size > 0) {
-		delete[] values;
-		values = nullptr;
-	};
-
-	if (newValues != nullptr && newSize > 0) {
-		size = newSize;
-		values = new float[newSize];
-		for (int i = 0; i < newSize; i++) {
-			values[i] = newValues[i];
-		}
-	}
-	else {
-		size = 0;
-		values = nullptr;
 	}
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-
 class NumberStack {
 private:
 	int size;

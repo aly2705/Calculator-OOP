@@ -8,7 +8,8 @@
 #include "Expression.h"
 using namespace std;
 
-
+////////////////////////////////////////
+// Constructors
 Expression::Expression():number(0) {
 	result = NULL;
 	infix = "";
@@ -30,26 +31,100 @@ Expression::Expression(const Expression& expr): number(expr.number) {
 			postfix[i] = expr.postfix[i];
 		}
 	}
+	else postfix = nullptr;
 }
+
+////////////////////////////////////////
+// Destructor
 Expression::~Expression() {
 	if (postfix != nullptr) delete[] postfix;
 }
+
+////////////////////////////////////////
+// Operator overloading
 Expression& Expression::operator=(const Expression& expr) {
 	if (this != &expr) {
-		if (postfix != nullptr) delete[] postfix;
+		if (postfix != nullptr) {
+			delete[] postfix;
+			postfix = nullptr;
+		};
 		infix = expr.infix;
 		result = expr.result;
 
 		if (expr.postfix != nullptr) {
 			int copiedPostfixLength = strlen(expr.postfix);
-			postfix = new char[copiedPostfixLength];
+			postfix = new char[copiedPostfixLength + 1];
 			for (int i = 0; i < copiedPostfixLength; i++) {
 				postfix[i] = expr.postfix[i];
 			}
+			postfix[copiedPostfixLength] = '\0';
 		}
+		else postfix = nullptr;
 	}
 	return *this;
 }
+
+Expression Expression::operator+(const Expression& expr) {
+	Expression copie;
+	copie.infix = this->infix + "+(" + expr.infix + ")";
+	return copie;
+}
+
+Expression Expression::operator-(const Expression& expr) {
+	Expression copie;
+	copie.infix = this->infix + "-(" + expr.infix + ")";
+	return copie;
+}
+
+///////////////////////////////////////
+// Access methods
+float Expression::getResult() {
+	return result;
+}
+
+void Expression::setResult(float result) {
+	if (result == NULL) this->result = result;
+}
+
+string Expression::getInfix() {
+	return infix;
+}
+void Expression::setInfix(string infix) {
+	if (infix != "") {
+		Token firstToken(infix[0]);
+		if (firstToken.isSign() || firstToken.isOpenParanthesis() || firstToken.isDigit()) this->infix = infix;
+	}
+}
+
+char Expression::getPostfix(int index) {
+	if (index < strlen(postfix) && index >= 0 && postfix != nullptr) return postfix[index];
+	// else throw exception;
+}
+
+void Expression::setPostfix(char* newPostfix) {
+	if (postfix != nullptr) {
+		delete[] postfix;
+		postfix = nullptr;
+	}
+	if (newPostfix != nullptr) {
+		int dim = strlen(newPostfix);
+
+		postfix = new char[dim + 1];
+		for (int i = 0; i < dim; i++) {
+			postfix[i] = newPostfix[i];
+		}
+		postfix[dim] = '\0';
+	}
+	else postfix = nullptr;
+}
+
+int Expression::getNumber() {
+	return number;
+}
+
+
+////////////////////////////////////////
+// Generic methods
 void Expression::addToPostfix(Token token) {
 	if (postfix != nullptr) {
 		int postfixSize = strlen(postfix);
@@ -97,9 +172,26 @@ void Expression::addToPostfix(char token) {
 	}
 }
 
+void Expression::removeSpacesFromInfix() {
+	if (infix != "") {
+		int k = 0;
+		char newInfix[100];
+
+		for (int i = 0; i < infix.length(); i++) {
+			Token t(infix[i]);
+			if (!t.isSpace()) newInfix[k++] = infix[i];
+		}
+		newInfix[k++] = '\0';
+
+		if (k > 1) infix = newInfix;
+		else infix = "";
+	}
+}
+
 // exit code 0 - successful parse
 // exit code 1 - error during parsing
 int Expression::convertInfixToPostfix() {
+	removeSpacesFromInfix();
 	if (infix == "") return 1;
 	CharStack charStack;
 
@@ -110,56 +202,65 @@ int Expression::convertInfixToPostfix() {
 
 	for (int i = 0; i < infix.length(); i++) {
 		Token t(infix[i]);
-		if (!t.isSpace()) {
-			if (t.isDigit() || t.isPoint()) {
-				addToPostfix(t);
+		
+		if (t.isDigit() || t.isPoint()) {
+			addToPostfix(t);
 
-				if (i + 1 < infix.length()) {
-					Token nextTok(infix[i + 1]);
-					if ((!nextTok.isPoint() && !nextTok.isDigit()) || i + 1 == infix.length()) {
-						addToPostfix(Token::getDelimiter());
-					}
-				}
-				else if (i + 1 == infix.length()) {
+			if (i + 1 < infix.length()) {
+				Token nextTok(infix[i + 1]);
+				if ((!nextTok.isPoint() && !nextTok.isDigit()) || i + 1 == infix.length()) {
 					addToPostfix(Token::getDelimiter());
 				}
 			}
-			else if (t.isOpenParanthesis()) charStack.push('(');
-			else if (t.isOperator()) {
-				int stackSize = charStack.getSize();
-				char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
-
-				Token lastToken(lastValue);
-				while (lastToken.precedence() >= t.precedence() && lastValue && !lastToken.isOpenParanthesis()) {
-					char poppedValue = charStack.pop();
-					addToPostfix(poppedValue);
-					addToPostfix(Token::getDelimiter());
-
-					stackSize = charStack.getSize();
-					lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
-					lastToken.setValue(lastValue);
-				}
-				charStack.push(t.getValue());
+			else if (i + 1 == infix.length()) {
+				addToPostfix(Token::getDelimiter());
 			}
-			else if (t.isClosingParanthesis()) {
-				int stackSize = charStack.getSize();
-				char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
-
-				Token lastToken(lastValue);
-				while (!lastToken.isOpenParanthesis()) {
-					char poppedValue = charStack.pop();
-					addToPostfix(poppedValue);
-					addToPostfix(Token::getDelimiter());
-
-					stackSize = charStack.getSize();
-					lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
-					lastToken.setValue(lastValue);
-				}
-				charStack.pop();
-			}
-			else return 1;
 		}
-	}
+		else if (t.isOpenParanthesis()) charStack.push('(');
+		else if (t.isOperator()) {
+			// here we manage the signed numbers in an expression after a paranthesis
+			// => a 0 is inserted in postfix so (-x) will be converted in '0 x -'
+			if(i>0){
+				Token lastProcessedToken(infix[i - 1]);
+				if (t.isSign() && lastProcessedToken.isOpenParanthesis()) {
+					addToPostfix('0');
+					addToPostfix(Token::getDelimiter());
+				}
+			}
+
+			int stackSize = charStack.getSize();
+			char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+			Token lastToken(lastValue);
+			while (lastToken.operatorPrecedence() >= t.operatorPrecedence() && lastValue && !lastToken.isOpenParanthesis()) {
+				char poppedValue = charStack.pop();
+				addToPostfix(poppedValue);
+				addToPostfix(Token::getDelimiter());
+
+				stackSize = charStack.getSize();
+				lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+				lastToken.setValue(lastValue);
+			}
+			charStack.push(t.getValue());
+		}
+		else if (t.isClosingParanthesis()) {
+			int stackSize = charStack.getSize();
+			char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+
+			Token lastToken(lastValue);
+			while (!lastToken.isOpenParanthesis()) {
+				char poppedValue = charStack.pop();
+				addToPostfix(poppedValue);
+				addToPostfix(Token::getDelimiter());
+
+				stackSize = charStack.getSize();
+				lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+				lastToken.setValue(lastValue);
+			}
+			charStack.pop();
+		}
+		else return 1;
+		
+	};
 	int stackSize = charStack.getSize();
 	while (stackSize > 0) {
 		char poppedValue = charStack.pop();
@@ -168,7 +269,7 @@ int Expression::convertInfixToPostfix() {
 
 		stackSize = charStack.getSize();
 	}
-	//cout << postfix<<endl;
+	cout << postfix<<endl;
 
 	return 0;
 }
@@ -203,6 +304,7 @@ int Expression::evaluatePostfixResult() {
 			else if (firstToken.getValue() == '*') numStack.push(a * b);
 			else if (firstToken.getValue() == '/') {
 				if (a != 0) numStack.push(b / a);
+				// finish with error if a division by 0 is tried
 				else return 1;
 			}
 			else if (firstToken.getValue() == '-') numStack.push(b - a);
@@ -230,20 +332,3 @@ int Expression::evaluate() {
 	else return 1;
 }
 
-float Expression::getResult() {
-	return result;
-}
-
-void Expression::setResult(float result) {
-	if (result == NULL) this->result = result;
-}
-
-string Expression::getInfix() {
-	return infix;
-};
-void Expression::setInfix(string infix) {
-	if(infix != ""){
-		Token firstToken(infix[0]);
-		if (firstToken.isSign() || firstToken.isOpenParanthesis() || firstToken.isDigit()) this->infix = infix;
-	}
-};

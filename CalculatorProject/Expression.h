@@ -1,5 +1,9 @@
 #pragma once
 #include <iostream>
+#include <string>
+#include "NumberStack.h"
+#include "CharStack.h"
+#include "Token.h"
 using namespace std;
 
 
@@ -26,21 +30,33 @@ public:
 	// Operator overloading
 	Expression& operator=(const Expression& expr);
 
+	Expression operator+(const Expression& expr);
+
+	Expression operator-(const Expression& expr);
+
 	///////////////////////////////////////
 	// Access methods
 	string getInfix();
+
 	void setInfix(string infix);
 
+	char getPostfix(int index);
+
+	void setPostfix(char* newPostfix);
 
 	float getResult();
 
 	void setResult(float result);
+
+	int getNumber();
 
 	////////////////////////////////////////
 	// Generic methods
 	void addToPostfix(Token token);
 	
 	void addToPostfix(char token);
+
+	void removeSpacesFromInfix();
 
 	// exit code 0 - successful parse
 	// exit code 1 - error during parsing

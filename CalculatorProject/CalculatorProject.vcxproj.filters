@@ -18,9 +18,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NumberStack.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="CharStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Token.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

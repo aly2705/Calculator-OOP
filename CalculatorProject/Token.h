@@ -7,12 +7,14 @@ private:
 	static char delimiter;
 
 public:
+	////////////////////////////////////
 	// Constructors
 	Token();
 
 	Token(char value);
 
 
+	///////////////////////////////////
 	// Access Methods
 	char getValue();
 
@@ -22,20 +24,22 @@ public:
 
 	static void setDelimiter(char newDelimiter);
 
+	///////////////////////////////////
 	// Generic methods
-	int isOpenParanthesis();
+	bool isOpenParanthesis();
 
-	int isClosingParanthesis();
+	bool isClosingParanthesis();
 
-	int isOperator();
+	bool isOperator();
 
-	int isDigit();
+	bool isDigit();
 
-	int isPoint();
+	bool isPoint();
 
-	int isSpace();
+	bool isSpace();
 
-	int precedence();
+	bool isSign();
 
-	int isSign();
+	int operatorPrecedence();
+	
 };

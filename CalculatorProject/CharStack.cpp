@@ -1,6 +1,8 @@
 #include "CharStack.h";
 
 
+/////////////////////////////////
+// Constructors
 CharStack::CharStack() {
 	values = nullptr;
 	size = 0;
@@ -25,12 +27,18 @@ CharStack::CharStack(const CharStack& s) : CharStack() {
 		}
 	}
 }
+
+/////////////////////////////////
+// Destructor
 CharStack::~CharStack() {
 	if (values != nullptr && size > 0) {
 		delete[] values;
 		values = nullptr;
 	};
 }
+
+////////////////////////////////
+// Operator overloading
 CharStack& CharStack::operator=(const CharStack& s) {
 	if (this != &s) {
 
@@ -53,6 +61,41 @@ CharStack& CharStack::operator=(const CharStack& s) {
 	}
 	return *this;
 }
+
+////////////////////////////////
+// Access methods
+int CharStack::getSize() {
+	return size;
+
+}
+char CharStack::getValue(int index) {
+	if (index < size) {
+		return values[index];
+	}
+	else return -1;
+}
+
+void CharStack::setValues(char* newValues, int newSize) {
+	if (values != nullptr && size > 0) {
+		delete[] values;
+		values = nullptr;
+	};
+
+	if (newValues != nullptr && newSize > 0) {
+		size = newSize;
+		values = new char[newSize];
+		for (int i = 0; i < newSize; i++) {
+			values[i] = newValues[i];
+		}
+	}
+	else {
+		size = 0;
+		values = nullptr;
+	}
+}
+
+/////////////////////////////////
+// Generic methods
 void CharStack::push(char token) {
 	if (values != nullptr && size > 0) {
 		char* buffer = new char[size];
@@ -99,32 +142,4 @@ char CharStack::pop() {
 	}
 }
 
-int CharStack::getSize() {
-	return size;
 
-}
-char CharStack::getValue(int index) {
-	if (index < size) {
-		return values[index];
-	}
-	else return -1;
-}
-
-void CharStack::setValues(char* newValues, int newSize) {
-	if (values != nullptr && size > 0) {
-		delete[] values;
-		values = nullptr;
-	};
-
-	if (newValues != nullptr && newSize > 0) {
-		size = newSize;
-		values = new char[newSize];
-		for (int i = 0; i < newSize; i++) {
-			values[i] = newValues[i];
-		}
-	}
-	else {
-		size = 0;
-		values = nullptr;
-	}
-}
