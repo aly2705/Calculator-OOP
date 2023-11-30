@@ -1,6 +1,8 @@
-#include "Token.h"
-#include <string.h>
 
+#include <cstring>
+#include <iostream>
+#include "Token.h"
+using namespace std;
 
 ////////////////////////////////////
 // Static attribute initialization
@@ -90,6 +92,19 @@ bool Token::operator==(Token tok) {
 		// compare operator precedence
 		return this->operatorPrecedence() == tok.operatorPrecedence();
 	}
+};
+
+ostream& operator<<(ostream& out, const Token& t) {
+	
+	out << t.value;
+
+	return out;
+};
+istream& operator>>(istream& in, Token& t) {
+	char tok;
+	in >> tok;
+	t.setValue(tok);
+	return in;
 };
 
 ///////////////////////////////////

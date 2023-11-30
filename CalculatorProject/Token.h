@@ -1,5 +1,6 @@
 #pragma once
-
+#include <iostream>
+using namespace std;
 
 class Token {
 private:
@@ -37,6 +38,9 @@ public:
 	bool operator<(Token tok);
 
 	bool operator==(Token tok);
+
+	friend ostream& operator<<(ostream& out, const Token& t);
+	friend istream& operator>>(istream& in, Token& t);
 
 	///////////////////////////////////
 	// Generic methods

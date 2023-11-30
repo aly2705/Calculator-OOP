@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+using namespace std;
 
 class CharStack {
 private:
@@ -21,6 +23,13 @@ public:
 	////////////////////////////////
 	// Operator overloading
 	CharStack& operator=(const CharStack& s);
+
+	char& operator[](int index);
+
+	operator int();
+
+	friend ostream& operator<<(ostream& out, const CharStack& s);
+	friend istream& operator>>(istream& in, CharStack& s);
 
 	////////////////////////////////
 	// Access methods

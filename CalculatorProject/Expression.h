@@ -11,7 +11,7 @@ class Expression {
 	string infix;
 	char* postfix;
 	const int number;
-	float result;
+	double result;
 
 public:
 	////////////////////////////////////////
@@ -34,6 +34,10 @@ public:
 
 	Expression operator-(const Expression& expr);
 
+	friend ostream& operator<<(ostream& out, const Expression& expr);
+
+	friend istream& operator>>(istream& in, Expression& expr);
+
 	///////////////////////////////////////
 	// Access methods
 	string getInfix();
@@ -44,9 +48,9 @@ public:
 
 	void setPostfix(char* newPostfix);
 
-	float getResult();
+	double getResult();
 
-	void setResult(float result);
+	void setResult(double result);
 
 	int getNumber();
 

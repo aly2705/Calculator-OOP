@@ -1,4 +1,7 @@
 #include "CharStack.h";
+#include <exception>
+#include <iostream>
+using namespace std;
 
 
 /////////////////////////////////
@@ -62,18 +65,61 @@ CharStack& CharStack::operator=(const CharStack& s) {
 	return *this;
 }
 
+char& CharStack::operator[](int index) {
+	if (values != nullptr)
+		if (index >= 0 && index < size) {
+			return values[index];
+		}
+		else throw exception("Index invalid");
+	else throw exception("Stiva este goala");
+}
+
+CharStack::operator int() {
+	return size;
+}
+
+ostream& operator<<(ostream& out, const CharStack& s) {
+	if (s.values != nullptr)
+		for (int i = 0; i < s.size; i++) {
+			out << s.values[i] << " ";
+		}
+	else out << "Stiva este goala";
+	out << endl;
+	return out;
+};
+istream& operator>>(istream& in, CharStack& s) {
+	int dim;
+
+	cout << "Dimensiune stiva de caratere: ";
+	in >> dim;
+	if (dim > 0) {
+		char* buffer = new char[dim];
+		cout << endl << "Elemente: ";
+		for (int i = 0; i < dim; i++)
+		{
+			in >> buffer[i];
+		}
+		cout << endl;
+		s.setValues(buffer, dim);
+	}
+	else throw exception("Dimensiune invalida");
+	return in;
+
+
+};
+
 ////////////////////////////////
 // Access methods
 int CharStack::getSize() {
 	return size;
 
-}
+};
 char CharStack::getValue(int index) {
 	if (index < size) {
 		return values[index];
 	}
 	else return -1;
-}
+};
 
 void CharStack::setValues(char* newValues, int newSize) {
 	if (values != nullptr && size > 0) {

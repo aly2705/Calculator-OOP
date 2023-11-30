@@ -1,6 +1,7 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <cmath>
 #include "CharStack.h"
 #include "NumberStack.h"
@@ -25,11 +26,9 @@ Expression::Expression(const Expression& expr): number(expr.number) {
 	infix = expr.infix;
 
 	if (expr.postfix != nullptr) {
-		int copiedPostfixLength = strlen(expr.postfix);
-		postfix = new char[copiedPostfixLength];
-		for (int i = 0; i < copiedPostfixLength; i++) {
-			postfix[i] = expr.postfix[i];
-		}
+		postfix = new char[strlen(expr.postfix)+1];
+		strcpy_s(postfix, strlen(expr.postfix) + 1, expr.postfix);
+		
 	}
 	else postfix = nullptr;
 }
@@ -52,12 +51,9 @@ Expression& Expression::operator=(const Expression& expr) {
 		result = expr.result;
 
 		if (expr.postfix != nullptr) {
-			int copiedPostfixLength = strlen(expr.postfix);
-			postfix = new char[copiedPostfixLength + 1];
-			for (int i = 0; i < copiedPostfixLength; i++) {
-				postfix[i] = expr.postfix[i];
-			}
-			postfix[copiedPostfixLength] = '\0';
+			postfix = new char[strlen(expr.postfix) + 1];
+			strcpy_s(postfix, strlen(expr.postfix) + 1, expr.postfix);
+
 		}
 		else postfix = nullptr;
 	}
@@ -76,13 +72,34 @@ Expression Expression::operator-(const Expression& expr) {
 	return copie;
 }
 
+ostream& operator<<(ostream& out, const Expression& expr) {
+	double decimalPart = expr.result - (int)expr.result;
+	int decimalsCount = 0;
+	
+	if (abs(decimalPart) > 0.0)
+		out << std::fixed << std::setprecision(4) << expr.result;
+	else out << std::defaultfloat << expr.result;
+
+	return out;
+}
+istream& operator>>(istream& in, Expression& expr) {
+	string input;
+	getline(in, input);
+
+	expr.result = NULL;
+	expr.infix = input;
+	expr.postfix = nullptr;
+
+	return in;
+}
+
 ///////////////////////////////////////
 // Access methods
-float Expression::getResult() {
+double Expression::getResult() {
 	return result;
 }
 
-void Expression::setResult(float result) {
+void Expression::setResult(double result) {
 	if (result == NULL) this->result = result;
 }
 
@@ -107,13 +124,9 @@ void Expression::setPostfix(char* newPostfix) {
 		postfix = nullptr;
 	}
 	if (newPostfix != nullptr) {
-		int dim = strlen(newPostfix);
+		postfix = new char[strlen(newPostfix) + 1];
+		strcpy_s(postfix, strlen(newPostfix) + 1, newPostfix);
 
-		postfix = new char[dim + 1];
-		for (int i = 0; i < dim; i++) {
-			postfix[i] = newPostfix[i];
-		}
-		postfix[dim] = '\0';
 	}
 	else postfix = nullptr;
 }
@@ -244,8 +257,9 @@ int Expression::convertInfixToPostfix() {
 			}
 
 
-			int stackSize = charStack.getSize();
-			char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+			//int stackSize = charStack.getSize();
+			int stackSize = charStack;  // cast to int will give the size
+			char lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
 			Token lastToken(lastValue);
 
 			// t & lastToken are operators => relational operator will compare precedence
@@ -254,15 +268,16 @@ int Expression::convertInfixToPostfix() {
 				addToPostfix(poppedValue);
 				addToPostfix(Token::getDelimiter());
 				
-				stackSize = charStack.getSize();
-				lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+				stackSize = charStack;
+				lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
 				lastToken.setValue(lastValue);
 			}
 			charStack.push(t.getValue());
 		}
 		else if (t.isClosingParanthesis()) {
-			int stackSize = charStack.getSize();
-			char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+
+			int stackSize = charStack;
+			char lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
 
 			Token lastToken(lastValue);
 			while (!lastToken.isOpenParanthesis() && stackSize>0) {
@@ -270,8 +285,8 @@ int Expression::convertInfixToPostfix() {
 				addToPostfix(poppedValue);
 				addToPostfix(Token::getDelimiter());
 
-				stackSize = charStack.getSize();
-				lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
+				stackSize = charStack;
+				lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
 				lastToken.setValue(lastValue);
 			}
 			if (charStack.getSize() == 0) return 1;
@@ -280,16 +295,14 @@ int Expression::convertInfixToPostfix() {
 		else return 1;
 		
 	};
-	int stackSize = charStack.getSize();
+	int stackSize = charStack;
 	while (stackSize > 0) {
 		char poppedValue = charStack.pop();
 		addToPostfix(poppedValue);
 		if (stackSize - 1 > 0) addToPostfix(Token::getDelimiter());
 
-		stackSize = charStack.getSize();
+		stackSize = charStack;
 	}
-	cout << postfix<<endl;
-
 	return 0;
 }
 
@@ -307,19 +320,20 @@ int Expression::evaluatePostfixResult() {
 
 	char* sequence = strtok_s(postfix, delimiter, &context);
 	while (sequence != NULL) {
+		
 		Token firstToken(sequence[0]);
-		if (firstToken.isDigit()) numStack.push(strtof(sequence, NULL));
+		if (firstToken.isDigit()) numStack.push(strtod(sequence, NULL));
 		if (firstToken.isOperator()) {
 			// Get operands
-			float a = numStack.pop();
+			double a = numStack.pop();
 
-			float b;
+			double b;
 			if (numStack.getSize() > 0)
 				b = numStack.pop();
 			else b = 0;
 
 			// Perform desired operation and push in the numStack
-			if (firstToken.getValue() == '+') numStack.push(a + b);
+			if (firstToken.getValue()== '+') numStack.push(a + b); 
 			else if (firstToken.getValue() == '*') numStack.push(a * b);
 			else if (firstToken.getValue() == '/') {
 				if (a != 0) numStack.push(b / a);
@@ -337,11 +351,13 @@ int Expression::evaluatePostfixResult() {
 				if (b < 0) return 1;
 				else numStack.push(pow(b, 1 / a));
 			}
+			
 		}
 
 		sequence = strtok_s(NULL, delimiter, &context);
 	}
 	// Last value in the stack will be the expression result
+	
 	this->result = numStack.pop();
 	return 0;
 }

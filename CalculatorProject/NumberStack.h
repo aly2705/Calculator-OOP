@@ -1,17 +1,19 @@
 #pragma once
+#include <iostream>
+using namespace std;
 
 
 class NumberStack {
 private:
 	int size;
-	float* values;
+	double* values;
 
 public:
 	/////////////////////////////////////
 	// Constructors
 	NumberStack();
 
-	NumberStack(float* values, int size);
+	NumberStack(double* values, int size);
 
 	NumberStack(const NumberStack& s);
 
@@ -23,17 +25,27 @@ public:
 	// Operator overloading
 	NumberStack& operator=(const NumberStack& s);
 
+	NumberStack operator++();
+	NumberStack operator++(int x);
+
+	NumberStack operator--();
+	NumberStack operator--(int x);
+
+
+	friend ostream& operator<<(ostream& out, const NumberStack& s);
+	friend istream& operator>>(istream& in, NumberStack& s);
+
 	/////////////////////////////////////
 	// Access methods
 	int getSize();
 
-	float getValue(int index);
+	double getValue(int index);
 
-	void setValues(float* newValues, int newSize);
+	void setValues(double* newValues, int newSize);
 
 	/////////////////////////////////////
 	// Generic methods
-	void push(float token);
+	void push(double num);
 
-	float pop();
+	double pop();
 };
