@@ -32,6 +32,67 @@ void Token::setDelimiter(char newDelimiter) {
 }
 
 ///////////////////////////////////
+// Operator overloading
+bool Token::operator!() {
+	return value == delimiter;
+}
+
+bool Token::operator>=(Token tok) {
+	if (!this->isOperator() || !tok.isOperator()) {
+		// compare ascii codes
+		return this->value >= tok.value;
+	}
+	else {
+		// compare operator precedence
+		return this->operatorPrecedence() >= tok.operatorPrecedence();
+	}
+};
+
+bool Token::operator>(Token tok) {
+	if (!this->isOperator() || !tok.isOperator()) {
+		// compare ascii codes
+		return this->value > tok.value;
+	}
+	else {
+		// compare operator precedence
+		return this->operatorPrecedence() > tok.operatorPrecedence();
+	}
+};
+
+bool Token::operator<=(Token tok) {
+	if (!this->isOperator() || !tok.isOperator()) {
+		// compare ascii codes
+		return this->value <= tok.value;
+	}
+	else {
+		// compare operator precedence
+		return this->operatorPrecedence() <= tok.operatorPrecedence();
+	}
+};
+
+bool Token::operator<(Token tok) {
+	if (!this->isOperator() || !tok.isOperator()) {
+		// compare ascii codes
+		return this->value < tok.value;
+	}
+	else {
+		// compare operator precedence
+		return this->operatorPrecedence() <= tok.operatorPrecedence();
+	}
+};
+
+bool Token::operator==(Token tok) {
+	if (!this->isOperator() || !tok.isOperator()) {
+		// compare ascii codes
+		return this->value == tok.value;
+	}
+	else {
+		// compare operator precedence
+		return this->operatorPrecedence() == tok.operatorPrecedence();
+	}
+};
+
+///////////////////////////////////
 // Generic methods
 bool Token::isOpenParanthesis() {
 	return (value == '(' || value == '[');

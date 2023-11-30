@@ -25,6 +25,20 @@ public:
 	static void setDelimiter(char newDelimiter);
 
 	///////////////////////////////////
+	// Operator overloading
+	bool operator!();
+
+	bool operator>=(Token tok);
+
+	bool operator>(Token tok);
+
+	bool operator<=(Token tok);
+
+	bool operator<(Token tok);
+
+	bool operator==(Token tok);
+
+	///////////////////////////////////
 	// Generic methods
 	bool isOpenParanthesis();
 

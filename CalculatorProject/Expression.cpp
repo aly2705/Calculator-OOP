@@ -216,26 +216,44 @@ int Expression::convertInfixToPostfix() {
 				addToPostfix(Token::getDelimiter());
 			}
 		}
-		else if (t.isOpenParanthesis()) charStack.push('(');
+		else if (t.isOpenParanthesis()) { 
+			if (i > 0) {
+				// 5(...) will result in invalid expression
+				Token lastProcessedToken(infix[i - 1]);
+				if (lastProcessedToken.isDigit()) return 1;
+			}
+			charStack.push('('); 
+		}
 		else if (t.isOperator()) {
-			// here we manage the signed numbers in an expression after a paranthesis
-			// => a 0 is inserted in postfix so (-x) will be converted in '0 x -'
+			
 			if(i>0){
+
+				// here we manage the signed numbers in an expression after a paranthesis
+				// => a 0 is inserted in postfix so (-x) will be converted in '0 x -'
 				Token lastProcessedToken(infix[i - 1]);
 				if (t.isSign() && lastProcessedToken.isOpenParanthesis()) {
 					addToPostfix('0');
 					addToPostfix(Token::getDelimiter());
 				}
+
+
+				//consecutive operators are not allowed 
+				if (lastProcessedToken.isOperator()) return 1;
+
+				if (lastProcessedToken.isDigit() && t.isOpenParanthesis()) return 1;
 			}
+
 
 			int stackSize = charStack.getSize();
 			char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
 			Token lastToken(lastValue);
-			while (lastToken.operatorPrecedence() >= t.operatorPrecedence() && lastValue && !lastToken.isOpenParanthesis()) {
+
+			// t & lastToken are operators => relational operator will compare precedence
+			while (lastToken >= t && lastValue && !lastToken.isOpenParanthesis()) {
 				char poppedValue = charStack.pop();
 				addToPostfix(poppedValue);
 				addToPostfix(Token::getDelimiter());
-
+				
 				stackSize = charStack.getSize();
 				lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
 				lastToken.setValue(lastValue);
@@ -247,7 +265,7 @@ int Expression::convertInfixToPostfix() {
 			char lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
 
 			Token lastToken(lastValue);
-			while (!lastToken.isOpenParanthesis()) {
+			while (!lastToken.isOpenParanthesis() && stackSize>0) {
 				char poppedValue = charStack.pop();
 				addToPostfix(poppedValue);
 				addToPostfix(Token::getDelimiter());
@@ -256,6 +274,7 @@ int Expression::convertInfixToPostfix() {
 				lastValue = stackSize > 0 ? charStack.getValue(stackSize - 1) : 0;
 				lastToken.setValue(lastValue);
 			}
+			if (charStack.getSize() == 0) return 1;
 			charStack.pop();
 		}
 		else return 1;
@@ -308,8 +327,16 @@ int Expression::evaluatePostfixResult() {
 				else return 1;
 			}
 			else if (firstToken.getValue() == '-') numStack.push(b - a);
-			else if (firstToken.getValue() == '^') numStack.push(pow(b, a));
-			else if (firstToken.getValue() == '#') numStack.push(pow(b, 1 / a));
+			else if (firstToken.getValue() == '^') {
+				// finish with error if 0^0 is tried
+				if (a != 0 && b != 0)
+					numStack.push(pow(b, a));
+				else return 1;
+			}
+			else if (firstToken.getValue() == '#') { 
+				if (b < 0) return 1;
+				else numStack.push(pow(b, 1 / a));
+			}
 		}
 
 		sequence = strtok_s(NULL, delimiter, &context);

@@ -24,6 +24,12 @@ int main() {
 	cout << expr3.getResult()<<endl;
 	*/
 	// Token testing
+	// ! operator overloading
+	//Token t(' ');
+	//cout << !t;
+	//Token t2('*');
+	//cout << !t2;
+
 
 	//////////////////////////
 	// Calculator functionality
