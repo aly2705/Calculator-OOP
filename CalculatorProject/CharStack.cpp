@@ -114,11 +114,15 @@ int CharStack::getSize() {
 	return size;
 
 };
-char CharStack::getValue(int index) {
-	if (index < size) {
-		return values[index];
+char* CharStack::getValues() {
+	char* copy = nullptr;
+	if (values != nullptr) {
+		copy = new char[size];
+		for (int i = 0; i < size; i++) {
+			copy[i] = values[i];
+		}
 	}
-	else return -1;
+	return copy;
 };
 
 void CharStack::setValues(char* newValues, int newSize) {

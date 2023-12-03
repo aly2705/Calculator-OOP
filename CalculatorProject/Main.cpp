@@ -9,37 +9,21 @@
 #include "Expression.h";
 using namespace std;
 
+/*
+*** Notita pentru parcurgerea mai usoara a proiectului:  
+* Proiectul foloseste algoritmul Shunting Yard dezvoltat de Djikstra pentru a converti expresii usor inteligibile precum (2+3)*7 (numita notatie infix)
+in expresii care tin cont de ordinea efectuarii operatiilor si pot fi calculate folosind o stiva de numere (expresia de mai sus devine '2 3 + 7 *' - numita
+notatie postfix)
+Daca infix-ul introdus este valid si nu apar exceptii la convertire, va exista o astfel de expresie postfix, care va fi evaluata pentru a determina rezultatul
+
+* Proiectul e construit pe baza claselor
+Expression - cu scop in convertirea si evaluarea expresiilor
+Token - cu scop in realizarea validarilor caracterelor intalnite in timpul conversiilor si prelucrarilor
+CharStack/NumberStack - cu functionailtati similare, implementate pentru a servi algoritmului de prelucrare a expresiilor 
+(vor putea fi implementate ca template in cadrul fazei 2
+*/
+
 int main() {
-	//////////////////////////
-	// Temporary testing zone
-	// Expression testing
-
-	/*
-	// + and - operator overloading
-	Expression expr1(0, "2* 4"), expr2(1, "5+ (-10)");
-	Expression expr3 = expr1 - expr2;
-
-	cout << expr3.getInfix();
-	expr3.evaluate();
-	cout << expr3.getResult()<<endl;
-	*/
-
-	// Token testing
-	// ! operator overloading
-	//Token t(' ');
-	//cout << !t;
-	//Token t2('*');
-	//cout << !t2;
-
-	/*
-	NumberStack s;
-	cin>>s;
-	s++;
-	cout << s;
-	--s;
-	cout << s;
-	*/
-
 	//////////////////////////
 	// Calculator functionality
 	string input = ""; int counter = 0;
@@ -51,11 +35,14 @@ int main() {
 		
 		if (input != "exit") {
 			Expression expression(++counter, input);
-			int hasError = expression.evaluate();
-			
-			if (!hasError) cout << expression << endl;
-			else if (hasError == 1) cout << "Invalid expression" << endl;
-			else if (hasError == 2) cout << "Invalid operation" << endl;
+
+			try {
+				expression.evaluate();
+				cout << expression << endl;
+			}
+			catch (exception& e) {
+				cout << e.what() << endl;
+			}
 			cout << endl;
 		}
 		else cout <<"Expresii evaluate: "<< counter << endl;

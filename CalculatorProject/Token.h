@@ -27,17 +27,19 @@ public:
 
 	///////////////////////////////////
 	// Operator overloading
+
+	// !token=true => token is the delimiter
+	// !token=false => token is not the delimiter
 	bool operator!();
 
+	// if both tokens are operators => compare precedence
+	// else compare ascii codes
 	bool operator>=(Token tok);
-
 	bool operator>(Token tok);
-
 	bool operator<=(Token tok);
-
 	bool operator<(Token tok);
-
 	bool operator==(Token tok);
+
 
 	friend ostream& operator<<(ostream& out, const Token& t);
 	friend istream& operator>>(istream& in, Token& t);

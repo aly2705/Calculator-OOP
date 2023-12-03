@@ -61,21 +61,25 @@ Expression& Expression::operator=(const Expression& expr) {
 }
 
 Expression Expression::operator+(const Expression& expr) {
-	Expression copie;
-	copie.infix = this->infix + "+(" + expr.infix + ")";
-	return copie;
+	// returns an expression that has the infix set as the result of exp1.infix+exp2.infix
+	Expression sumExpression;
+	sumExpression.infix = this->infix + "+(" + expr.infix + ")";
+	return sumExpression;
 }
 
 Expression Expression::operator-(const Expression& expr) {
-	Expression copie;
-	copie.infix = this->infix + "-(" + expr.infix + ")";
-	return copie;
+	// returns an expression that has the infix set as the result of exp1.infix-exp2.infix
+	Expression diffExpression;
+	diffExpression.infix = this->infix + "-(" + expr.infix + ")";
+	return diffExpression;
 }
 
 ostream& operator<<(ostream& out, const Expression& expr) {
+	// display expression result
 	double decimalPart = expr.result - (int)expr.result;
 	int decimalsCount = 0;
 	
+	// show 4 decimals if number has decimalPart, else show number without decimals
 	if (abs(decimalPart) > 0.0)
 		out << std::fixed << std::setprecision(4) << expr.result;
 	else out << std::defaultfloat << expr.result;
@@ -83,6 +87,7 @@ ostream& operator<<(ostream& out, const Expression& expr) {
 	return out;
 }
 istream& operator>>(istream& in, Expression& expr) {
+	// set infix value from a stream
 	string input;
 	getline(in, input);
 
@@ -113,9 +118,13 @@ void Expression::setInfix(string infix) {
 	}
 }
 
-char Expression::getPostfix(int index) {
-	if (index < strlen(postfix) && index >= 0 && postfix != nullptr) return postfix[index];
-	// else throw exception;
+char* Expression::getPostfix() {
+	char* copy = nullptr;
+	if (postfix != nullptr) {
+		copy = new char[strlen(postfix) + 1];
+		strcpy_s(copy, strlen(postfix) + 1, postfix);
+	}
+	return copy;
 }
 
 void Expression::setPostfix(char* newPostfix) {
@@ -201,16 +210,15 @@ void Expression::removeSpacesFromInfix() {
 	}
 }
 
-// exit code 0 - successful parse
-// exit code 1 - error during parsing
-int Expression::convertInfixToPostfix() {
+void Expression::convertInfixToPostfix() {
 	removeSpacesFromInfix();
-	if (infix == "") return 1;
+	if (infix == "") throw exception("Expresie invalida");
 	CharStack charStack;
 
 	
 	Token firstToken(infix[0]);
-	if (!firstToken.isSign() && !firstToken.isOpenParanthesis() && !firstToken.isDigit()) return 1;
+	if (!firstToken.isSign() && !firstToken.isOpenParanthesis() && !firstToken.isDigit()) 
+		throw exception("Expresie invalida");;
 	
 
 	for (int i = 0; i < infix.length(); i++) {
@@ -219,9 +227,27 @@ int Expression::convertInfixToPostfix() {
 		if (t.isDigit() || t.isPoint()) {
 			addToPostfix(t);
 
+			// Validations
+			if (i > 0 && i + 1 < infix.length()) {
+				
+				Token nextTok(infix[i + 1]), lastTok(infix[i - 1]);			
+
+				if (t.isPoint() && nextTok.isPoint()) {
+					throw exception("Expresie invalida. Secventa .. nu poate fi recunoscuta");
+				}
+
+				if (t.isPoint() && (!nextTok.isDigit() || !lastTok.isDigit())) {
+					throw exception("Expresie invalida. Punctul trebuie precedat si succedat de cifre");
+				}
+				
+			}
+
+			// Decisions
 			if (i + 1 < infix.length()) {
 				Token nextTok(infix[i + 1]);
-				if ((!nextTok.isPoint() && !nextTok.isDigit()) || i + 1 == infix.length()) {
+				
+
+				if ((!nextTok.isPoint() && !nextTok.isDigit())) {
 					addToPostfix(Token::getDelimiter());
 				}
 			}
@@ -233,7 +259,9 @@ int Expression::convertInfixToPostfix() {
 			if (i > 0) {
 				// 5(...) will result in invalid expression
 				Token lastProcessedToken(infix[i - 1]);
-				if (lastProcessedToken.isDigit()) return 1;
+				if (lastProcessedToken.isDigit()) 
+					throw exception("Expresie invalida! Numerele trebuie separate de paranteze printr-un operator");
+				
 			}
 			charStack.push('('); 
 		}
@@ -251,15 +279,17 @@ int Expression::convertInfixToPostfix() {
 
 
 				//consecutive operators are not allowed 
-				if (lastProcessedToken.isOperator()) return 1;
+				if (lastProcessedToken.isOperator()) 
+					throw exception("Expresie invalida. Operatorii consecutivi nu sunt permisi!");
 
-				if (lastProcessedToken.isDigit() && t.isOpenParanthesis()) return 1;
+				if (lastProcessedToken.isDigit() && t.isOpenParanthesis()) 
+					throw exception("Expresie invalida. Numerele trebuie separate de paranteze printr-un operator");
 			}
 
 
-			//int stackSize = charStack.getSize();
+			
 			int stackSize = charStack;  // cast to int will give the size
-			char lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
+			char lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0; // we use indexing operator to get the last value without actually popping it
 			Token lastToken(lastValue);
 
 			// t & lastToken are operators => relational operator will compare precedence
@@ -275,6 +305,12 @@ int Expression::convertInfixToPostfix() {
 			charStack.push(t.getValue());
 		}
 		else if (t.isClosingParanthesis()) {
+			if (i<infix.length()-1) {
+				// (...)5 will result in invalid expression
+				Token nextProcessedToken(infix[i + 1]);
+				if (nextProcessedToken.isDigit())
+					throw exception("Expresie invalida! Numerele trebuie separate de paranteze printr-un operator");
+			}
 
 			int stackSize = charStack;
 			char lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
@@ -289,10 +325,10 @@ int Expression::convertInfixToPostfix() {
 				lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
 				lastToken.setValue(lastValue);
 			}
-			if (charStack.getSize() == 0) return 1;
+			if (charStack.getSize() == 0) throw exception("Expresie invalida. Parantezele trebuie sa aiba pereche");
 			charStack.pop();
 		}
-		else return 1;
+		else throw exception("Expresie invalida. S-au introdus caractere necunoscute.");
 		
 	};
 	int stackSize = charStack;
@@ -303,12 +339,10 @@ int Expression::convertInfixToPostfix() {
 
 		stackSize = charStack;
 	}
-	return 0;
 }
 
-// exit code 0 - successful operation
-// exit code 1 - error during performing operations
-int Expression::evaluatePostfixResult() {
+
+void Expression::evaluatePostfixResult() {
 	NumberStack numStack;
 	char* context = nullptr;
 
@@ -318,11 +352,16 @@ int Expression::evaluatePostfixResult() {
 	}
 	else strcpy_s(delimiter, "_");
 
+	// Each sequence delimited by the static delimiter from Token class (which is either ' ' or '_') 
+	// can be a number or an operator and will be analised one by one
 	char* sequence = strtok_s(postfix, delimiter, &context);
 	while (sequence != NULL) {
 		
 		Token firstToken(sequence[0]);
+		// found a number => push into stack
 		if (firstToken.isDigit()) numStack.push(strtod(sequence, NULL));
+
+		// found an operator => get last two operands and perform operation then push back to stack
 		if (firstToken.isOperator()) {
 			// Get operands
 			double a = numStack.pop();
@@ -338,17 +377,21 @@ int Expression::evaluatePostfixResult() {
 			else if (firstToken.getValue() == '/') {
 				if (a != 0) numStack.push(b / a);
 				// finish with error if a division by 0 is tried
-				else return 1;
+				else throw exception("Operatie invalida! Impartirea la 0 nu este permisa.");
 			}
 			else if (firstToken.getValue() == '-') numStack.push(b - a);
 			else if (firstToken.getValue() == '^') {
 				// finish with error if 0^0 is tried
 				if (a != 0 && b != 0)
 					numStack.push(pow(b, a));
-				else return 1;
+				else throw exception("Operatie invalida! 0^0 nu poate fi efectuat.");
 			}
 			else if (firstToken.getValue() == '#') { 
-				if (b < 0) return 1;
+				if (b < 0) 
+					throw exception("Operatie invalida! Nu se poate efectua radical din numar negativ");
+
+				else if(a == 0)
+					throw exception("Operatie invalida! Nu se poate efectua radical de ordin 0");
 				else numStack.push(pow(b, 1 / a));
 			}
 			
@@ -357,21 +400,13 @@ int Expression::evaluatePostfixResult() {
 		sequence = strtok_s(NULL, delimiter, &context);
 	}
 	// Last value in the stack will be the expression result
-	
 	this->result = numStack.pop();
-	return 0;
 }
 
-// exit code 0 - success
-// exit code 1 - invalid expression
-// exit code 2 - invalid operation encountered
-int Expression::evaluate() {
-	int errorDuringParsing = convertInfixToPostfix();
-	if (!errorDuringParsing) {
-		int invalidOperation = evaluatePostfixResult();
-		if (!invalidOperation) return 0;
-		else return 2;
-	}
-	else return 1;
+
+void Expression::evaluate() {
+	convertInfixToPostfix();
+	evaluatePostfixResult();
+	
 }
 

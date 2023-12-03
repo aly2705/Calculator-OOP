@@ -6,7 +6,7 @@ using namespace std;
 
 ////////////////////////////////////
 // Static attribute initialization
-char Token::delimiter = ' ';
+char Token::delimiter = ' '; 
 
 
 ////////////////////////////////////

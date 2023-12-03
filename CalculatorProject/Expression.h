@@ -30,12 +30,16 @@ public:
 	// Operator overloading
 	Expression& operator=(const Expression& expr);
 
+	// returns an expression that has the infix set as the result of exp1.infix+exp2.infix
 	Expression operator+(const Expression& expr);
 
+	// returns an expression that has the infix set as the result of exp1.infix-exp2.infix
 	Expression operator-(const Expression& expr);
 
+	// display expression result
 	friend ostream& operator<<(ostream& out, const Expression& expr);
 
+	// set infix value from a stream
 	friend istream& operator>>(istream& in, Expression& expr);
 
 	///////////////////////////////////////
@@ -44,7 +48,7 @@ public:
 
 	void setInfix(string infix);
 
-	char getPostfix(int index);
+	char* getPostfix();
 
 	void setPostfix(char* newPostfix);
 
@@ -62,17 +66,13 @@ public:
 
 	void removeSpacesFromInfix();
 
-	// exit code 0 - successful parse
-	// exit code 1 - error during parsing
-	int convertInfixToPostfix();
 
-	// exit code 0 - successful operation
-	// exit code 1 - error during performing operations
-	int evaluatePostfixResult();
+	void convertInfixToPostfix();
 
-	// exit code 0 - success
-	// exit code 1 - invalid expression
-	// exit code 2 - invalid operation encountered
-	int evaluate();
+
+	void evaluatePostfixResult();
+
+
+	void evaluate();
 
 };

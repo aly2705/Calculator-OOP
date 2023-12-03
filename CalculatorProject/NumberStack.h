@@ -25,13 +25,17 @@ public:
 	// Operator overloading
 	NumberStack& operator=(const NumberStack& s);
 
+	// adds 1 to each element in stack
 	NumberStack operator++();
+	// adds 1 to each element in stack
 	NumberStack operator++(int x);
 
+	// subtracts 1 from each element in stack
 	NumberStack operator--();
+	// subtracts 1 from each element in stack
 	NumberStack operator--(int x);
 
-
+	
 	friend ostream& operator<<(ostream& out, const NumberStack& s);
 	friend istream& operator>>(istream& in, NumberStack& s);
 
@@ -39,7 +43,7 @@ public:
 	// Access methods
 	int getSize();
 
-	double getValue(int index);
+	double* getValues();
 
 	void setValues(double* newValues, int newSize);
 
