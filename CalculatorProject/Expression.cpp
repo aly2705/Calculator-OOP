@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include <cmath>
+#include <fstream>
 #include "CharStack.h"
 #include "NumberStack.h"
 #include "Token.h"
@@ -87,7 +88,7 @@ ostream& operator<<(ostream& out, const Expression& expr) {
 	return out;
 }
 istream& operator>>(istream& in, Expression& expr) {
-	// set infix value from a stream
+	// set infix value from console stream
 	string input;
 	getline(in, input);
 
@@ -96,6 +97,21 @@ istream& operator>>(istream& in, Expression& expr) {
 	expr.postfix = nullptr;
 
 	return in;
+}
+
+ifstream& operator>>(ifstream& f, Expression& expr) {
+	// read expression infix from txt file
+	if (f.is_open()) {
+		string input;
+		getline(f, input);
+
+		expr.result = NULL;
+		expr.infix = input;
+		expr.postfix = nullptr;
+
+		
+	}
+	return f;
 }
 
 ///////////////////////////////////////
@@ -193,6 +209,10 @@ void Expression::addToPostfix(char token) {
 		postfix[1] = '\0';
 	}
 }
+
+void Expression::addToInfix(string seq) {
+	infix += seq;
+};
 
 void Expression::removeSpacesFromInfix() {
 	if (infix != "") {

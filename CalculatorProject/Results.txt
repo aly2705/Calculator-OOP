@@ -1,0 +1,10 @@
+88
+Operatie invalida! Impartirea la 0 nu este permisa.
+7
+6.4000
+24342340.0002
+-2
+-0
+Expresie invalida. S-au introdus caractere necunoscute.
+10
+1.0006

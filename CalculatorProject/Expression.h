@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "NumberStack.h"
 #include "CharStack.h"
 #include "Token.h"
@@ -39,8 +40,11 @@ public:
 	// display expression result
 	friend ostream& operator<<(ostream& out, const Expression& expr);
 
-	// set infix value from a stream
+	// set infix value from console stream
 	friend istream& operator>>(istream& in, Expression& expr);
+
+	// set infix value from txt file
+	friend ifstream& operator>>(ifstream& f, Expression& expr);
 
 	///////////////////////////////////////
 	// Access methods
@@ -63,6 +67,8 @@ public:
 	void addToPostfix(Token token);
 	
 	void addToPostfix(char token);
+
+	void addToInfix(string seq);
 
 	void removeSpacesFromInfix();
 
