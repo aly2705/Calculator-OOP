@@ -81,4 +81,5 @@ public:
 
 	void evaluate();
 
+    void replaceVariablesInInfix(map<string, double> variables);
 };

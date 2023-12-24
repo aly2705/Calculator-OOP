@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cmath>
 #include <fstream>
+#include <map>
 #include "CharStack.h"
 #include "NumberStack.h"
 #include "Token.h"
@@ -76,6 +77,10 @@ Expression Expression::operator-(const Expression& expr) {
 }
 
 ostream& operator<<(ostream& out, const Expression& expr) {
+	if (expr.result == -0 || expr.result == 0) {
+		out << 0;
+		return out;
+	}
 	// display expression result
 	double decimalPart = expr.result - (int)expr.result;
 	int decimalsCount = 0;
@@ -250,7 +255,14 @@ void Expression::convertInfixToPostfix() {
 			// Validations
 			if (i > 0 && i + 1 < infix.length()) {
 				
-				Token nextTok(infix[i + 1]), lastTok(infix[i - 1]);			
+				Token nextTok(infix[i + 1]), lastTok(infix[i - 1]);		
+
+				if(t.isPoint() && strlen(postfix)>2){
+					// postfix is iterated backwards until it finds a ' ' or it reaches the start, to make sure that no other decimal separator was already added
+					for (int j = strlen(postfix)-2; postfix[j]!=' ' && j>0; j--) {
+						if(postfix[j] == '.') throw exception("Expresie invalida. Un numar poate avea un singur separator '.' ");
+					}
+				}
 
 				if (t.isPoint() && nextTok.isPoint()) {
 					throw exception("Expresie invalida. Secventa .. nu poate fi recunoscuta");
@@ -286,9 +298,7 @@ void Expression::convertInfixToPostfix() {
 			charStack.push('('); 
 		}
 		else if (t.isOperator()) {
-			
 			if(i>0){
-
 				// here we manage the signed numbers in an expression after a paranthesis
 				// => a 0 is inserted in postfix so (-x) will be converted in '0 x -'
 				Token lastProcessedToken(infix[i - 1]);
@@ -430,3 +440,20 @@ void Expression::evaluate() {
 	
 }
 
+void Expression::replaceVariablesInInfix(map<string, double> variables) {
+	string compiledInfix = infix;
+
+	map<string, double>::iterator it;
+	for (it = variables.begin(); it != variables.end(); ++it) {
+		int pos = compiledInfix.find(it->first);
+
+		while (pos != std::string::npos) {
+			string varValue = "(" + to_string(it->second) + ")";
+			compiledInfix.replace(pos, it->first.length(), varValue);
+			pos = compiledInfix.find(it->first, pos + to_string(it->second).length());
+		}
+	}
+
+	
+	this->infix = compiledInfix;
+};

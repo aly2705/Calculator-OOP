@@ -5,6 +5,6 @@ Operatie invalida! Impartirea la 0 nu este permisa.
 24342340.0002
 -2
 -0
-Expresie invalida. S-au introdus caractere necunoscute.
+Expresie invalida. Un numar poate avea un singur separator '.' 
 10
 1.0006
