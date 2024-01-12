@@ -5,8 +5,8 @@
 #include <cmath>
 #include <fstream>
 #include <map>
-#include "CharStack.h"
-#include "NumberStack.h"
+#include "Stack.h"
+#include "Stack.cpp"
 #include "Token.h"
 #include "Expression.h"
 using namespace std;
@@ -238,7 +238,7 @@ void Expression::removeSpacesFromInfix() {
 void Expression::convertInfixToPostfix() {
 	removeSpacesFromInfix();
 	if (infix == "") throw exception("Expresie invalida");
-	CharStack charStack;
+	Stack<char> charStack;
 
 	
 	Token firstToken(infix[0]);
@@ -373,7 +373,7 @@ void Expression::convertInfixToPostfix() {
 
 
 void Expression::evaluatePostfixResult() {
-	NumberStack numStack;
+	Stack<double> numStack;
 	char* context = nullptr;
 
 	char delimiter[2];

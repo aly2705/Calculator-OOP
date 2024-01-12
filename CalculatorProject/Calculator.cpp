@@ -1,4 +1,4 @@
-#define YELLOW_FC "\x1B[33m"
+﻿#define YELLOW_FC "\x1B[33m"
 #define DEFAULT_FC "\x1B[0m"
 #define GREEN_FC "\x1B[32m"
 #define RED_FC "\x1B[31m"
@@ -58,7 +58,7 @@ void Calculator::displayMainMenu() {
 	while (key != '\r') {
 		if (key != NULL) system("cls");
 		cout << endl << RED_FC << "--------- MENIU --------" << DEFAULT_FC << endl;
-
+		cout <<  "Pentru navigare folositi tastele up-arrow si down-arrow si apasati 'enter' pentru a selecta optiunea dorita" << endl<<endl;
 		cout << ((choice == 1) ? YELLOW_FC : DEFAULT_FC) << "1. Introducere ecuatie" << endl;
 		cout << ((choice == 2) ? YELLOW_FC : DEFAULT_FC) << "2. Salveaza rezultatul curent intr-o variabila" << endl;
 		cout << ((choice == 3) ? YELLOW_FC : DEFAULT_FC) << "3. Afiseaza variabilele salvate" << endl;
@@ -156,9 +156,9 @@ void Calculator::saveResultAsVariable() {
 
 		// Validations
 		bool isAvailable = (storedVariables.find(varName) == storedVariables.end());
-		while (isdigit(varName[0]) || !isAvailable) {
+		while (!isAvailable || !isalpha(varName[0]) || !isalpha(varName[varName.length()-1])) {
 			if (!isAvailable) cout << "Numele variabilei exista deja! Incercati din nou!" << endl;
-			else cout << "Numele variabilei nu poate incepe cu o cifra! Incercati din nou." << endl;
+			else cout << "Numele variabilei trebuie sa inceapa si sa se termine cu o litera! Incercati din nou." << endl;
 
 			cin >> varName;
 			isAvailable = (storedVariables.find(varName) == storedVariables.end());
@@ -243,5 +243,4 @@ void Calculator::processExpressionsFromTextFile() {
 		}
 		f.close();
 	}
-
 }
