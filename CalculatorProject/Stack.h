@@ -26,7 +26,7 @@ public:
 	Stack& operator=(const Stack& s);
 
 	// gives the element at index i 
-	// (used to check the last element in the algorithm to see if it needs to be popped)
+	// (used to check the top of the stack)
 	T& operator[](int index);
 
 	// casts the stack into the stack size

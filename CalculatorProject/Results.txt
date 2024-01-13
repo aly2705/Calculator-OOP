@@ -4,7 +4,7 @@ Operatie invalida! Impartirea la 0 nu este permisa.
 6.4000
 24342340.0002
 -2
--0
+0
 Expresie invalida. Un numar poate avea un singur separator '.' 
 10
 1.0006

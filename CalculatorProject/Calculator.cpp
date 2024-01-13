@@ -183,7 +183,7 @@ void Calculator::saveResultAsVariable() {
 void Calculator::showSavedVariables() {
 
 	if (storedVariables.begin() != storedVariables.end()) {
-		cout << left << GREEN_FC << setw(25) << "Variable" << setw(20) << "Value" << DEFAULT_FC << endl << endl;
+		cout << left << GREEN_FC << setw(25) << "Variabila" << setw(20) << "Valoare" << DEFAULT_FC << endl << endl;
 		map<string, double>::iterator iterator;
 		for (iterator = storedVariables.begin(); iterator != storedVariables.end(); ++iterator) {
 			cout << left << setw(25) << iterator->first << setw(20) << iterator->second << endl;
@@ -215,7 +215,7 @@ void Calculator::processExpressionsFromTextFile() {
 		string destinationFile;
 		ofstream g;
 		if (key == 'y') {
-			cout << GREEN_FC << "Introduceti fisierul text destinatie: " << DEFAULT_FC;
+			cout << GREEN_FC << "Introduceti fisierul text destinatie (includeti extensia .txt): " << DEFAULT_FC;
 			cin >> destinationFile;
 			g.open(destinationFile);
 		}
@@ -242,5 +242,6 @@ void Calculator::processExpressionsFromTextFile() {
 			g.close();
 		}
 		f.close();
+		currentExp.reset();
 	}
 }

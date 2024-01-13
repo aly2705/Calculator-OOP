@@ -17,10 +17,15 @@ private:
 	} currentAction;
 
 public:
+	/////////////////////////////////////
+	// Constructors
 	Calculator();
 
 	Calculator(string appName);
 
+
+	/////////////////////////////////////
+	// Generic methods
 	void start();
 
 	void displayMainMenu();

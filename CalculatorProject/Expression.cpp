@@ -101,7 +101,13 @@ istream& operator>>(istream& in, Expression& expr) {
 
 	expr.result = NULL;
 	expr.infix = input;
-	expr.postfix = nullptr;
+	if (expr.postfix != nullptr) {
+		delete[] expr.postfix;
+		expr.postfix = nullptr;
+	}
+
+
+	
 
 	return in;
 }
@@ -114,7 +120,10 @@ ifstream& operator>>(ifstream& f, Expression& expr) {
 
 		expr.result = NULL;
 		expr.infix = input;
-		expr.postfix = nullptr;
+		if (expr.postfix != nullptr) {
+			delete[] expr.postfix;
+			expr.postfix = nullptr;
+		}
 
 		
 	}
@@ -170,6 +179,14 @@ int Expression::getNumber() {
 
 ////////////////////////////////////////
 // Generic methods
+void Expression::reset() {
+	result = NULL;
+	infix = "";
+	if (postfix != nullptr) {
+		delete[] postfix;
+		postfix = nullptr;
+	}
+}
 void Expression::addToPostfix(Token token) {
 	if (postfix != nullptr) {
 		int postfixSize = strlen(postfix);

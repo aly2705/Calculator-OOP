@@ -2,11 +2,12 @@
 #include <string>
 using namespace std;
 
-
+// Abstract class
 class App
 {
 protected:
 	string appName;
+
 public:
 	App();
 	App(string appName);

@@ -34,8 +34,7 @@ public:
 	// !token=false => token is not the delimiter
 	bool operator!();
 
-	// if both tokens are operators => compare precedence
-	// else compare ascii codes
+	// compare ascii codes
 	bool operator>=(Token tok);
 	bool operator>(Token tok);
 	bool operator<=(Token tok);

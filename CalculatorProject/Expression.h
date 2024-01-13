@@ -62,6 +62,7 @@ public:
 
 	////////////////////////////////////////
 	// Generic methods
+	void reset();
 	void addToPostfix(Token token);
 	
 	void addToPostfix(char token);
