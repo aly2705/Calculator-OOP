@@ -8,7 +8,9 @@
 #include "Stack.h"
 #include "Stack.cpp"
 #include "Token.h"
+#include "OperatorToken.h"
 #include "Expression.h"
+
 using namespace std;
 
 ////////////////////////////////////////
@@ -298,6 +300,9 @@ void Expression::convertInfixToPostfix() {
 			charStack.push('('); 
 		}
 		else if (t.isOperator()) {
+			
+
+			// Validations
 			if(i>0){
 				// here we manage the signed numbers in an expression after a paranthesis
 				// => a 0 is inserted in postfix so (-x) will be converted in '0 x -'
@@ -318,19 +323,28 @@ void Expression::convertInfixToPostfix() {
 
 
 			
+
 			int stackSize = charStack;  // cast to int will give the size
-			char lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0; // we use indexing operator to get the last value without actually popping it
+			char lastValue = stackSize > 0 ? charStack.top() : 0; // we use indexing operator to get the last value without actually popping it
+			
 			Token lastToken(lastValue);
 
-			// t & lastToken are operators => relational operator will compare precedence
-			while (lastToken >= t && lastValue && !lastToken.isOpenParanthesis()) {
+			OperatorToken currentOperator(t);
+			OperatorToken lastOperatorToken;
+			
+
+			if (lastToken.isOperator()) lastOperatorToken = lastToken;
+
+			// relational operator will compare precedence on operatorTokens if we extract operators from stack
+			while ((lastOperatorToken.isValidOperator() && lastOperatorToken >= currentOperator) && lastValue && !lastToken.isOpenParanthesis()) {
 				char poppedValue = charStack.pop();
 				addToPostfix(poppedValue);
 				addToPostfix(Token::getDelimiter());
 				
 				stackSize = charStack;
-				lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
+				lastValue = stackSize > 0 ? charStack.top() : 0;
 				lastToken.setValue(lastValue);
+				if (lastToken.isOperator()) lastOperatorToken = lastToken;
 			}
 			charStack.push(t.getValue());
 		}
@@ -343,7 +357,7 @@ void Expression::convertInfixToPostfix() {
 			}
 
 			int stackSize = charStack;
-			char lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
+			char lastValue = stackSize > 0 ? charStack.top() : 0;
 
 			Token lastToken(lastValue);
 			while (!lastToken.isOpenParanthesis() && stackSize>0) {
@@ -352,7 +366,7 @@ void Expression::convertInfixToPostfix() {
 				addToPostfix(Token::getDelimiter());
 
 				stackSize = charStack;
-				lastValue = stackSize > 0 ? charStack[stackSize - 1] : 0;
+				lastValue = stackSize > 0 ? charStack.top() : 0;
 				lastToken.setValue(lastValue);
 			}
 			if (charStack.getSize() == 0) throw exception("Expresie invalida. Parantezele trebuie sa aiba pereche");

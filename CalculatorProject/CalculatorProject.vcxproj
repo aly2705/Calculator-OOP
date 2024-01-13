@@ -133,6 +133,7 @@
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NumberStack.cpp" />
+    <ClCompile Include="OperatorToken.cpp" />
     <ClCompile Include="Stack.cpp" />
     <ClCompile Include="Token.cpp" />
   </ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="CharStack.h" />
     <ClInclude Include="Expression.h" />
     <ClInclude Include="NumberStack.h" />
+    <ClInclude Include="OperatorToken.h" />
     <ClInclude Include="Stack.h" />
     <ClInclude Include="Token.h" />
   </ItemGroup>

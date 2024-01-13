@@ -40,64 +40,29 @@ bool Token::operator!() {
 }
 
 bool Token::operator>=(Token tok) {
-	if (!this->isOperator() || !tok.isOperator()) {
-		// compare ascii codes
 		return this->value >= tok.value;
-	}
-	else {
-		// compare operator precedence
-		return this->operatorPrecedence() >= tok.operatorPrecedence();
-	}
 };
 
 bool Token::operator>(Token tok) {
-	if (!this->isOperator() || !tok.isOperator()) {
 		// compare ascii codes
 		return this->value > tok.value;
-	}
-	else {
-		// compare operator precedence
-		return this->operatorPrecedence() > tok.operatorPrecedence();
-	}
 };
 
 bool Token::operator<=(Token tok) {
-	if (!this->isOperator() || !tok.isOperator()) {
-		// compare ascii codes
 		return this->value <= tok.value;
-	}
-	else {
-		// compare operator precedence
-		return this->operatorPrecedence() <= tok.operatorPrecedence();
-	}
 };
 
 bool Token::operator<(Token tok) {
-	if (!this->isOperator() || !tok.isOperator()) {
-		// compare ascii codes
 		return this->value < tok.value;
-	}
-	else {
-		// compare operator precedence
-		return this->operatorPrecedence() <= tok.operatorPrecedence();
-	}
 };
 
 bool Token::operator==(Token tok) {
-	if (!this->isOperator() || !tok.isOperator()) {
-		// compare ascii codes
 		return this->value == tok.value;
-	}
-	else {
-		// compare operator precedence
-		return this->operatorPrecedence() == tok.operatorPrecedence();
-	}
 };
 
 ostream& operator<<(ostream& out, const Token& t) {
 	
 	out << t.value;
-
 	return out;
 };
 istream& operator>>(istream& in, Token& t) {
@@ -126,15 +91,6 @@ bool Token::isPoint() {
 }
 bool Token::isSpace() {
 	return value == ' ';
-}
-int Token::operatorPrecedence() {
-	if (isOperator()) {
-		if (value == '^' || value == '#') return 3;
-		if (value == '*' || value == '/') return 2;
-		if (value == '+' || value == '-') return 1;
-		return -1;
-	}
-	else return -1;
 }
 bool Token::isSign() {
 	return (value == '+' || value == '-');

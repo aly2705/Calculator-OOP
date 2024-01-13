@@ -4,8 +4,10 @@ using namespace std;
 
 class Token {
 private:
-	char value;
 	static char delimiter;
+
+protected:
+	char value;
 
 public:
 	////////////////////////////////////
@@ -59,7 +61,5 @@ public:
 	bool isSpace();
 
 	bool isSign();
-
-	int operatorPrecedence();
 	
 };

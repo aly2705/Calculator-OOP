@@ -2,8 +2,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "NumberStack.h"
-#include "CharStack.h"
 #include "Token.h"
 using namespace std;
 
